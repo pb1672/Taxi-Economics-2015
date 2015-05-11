@@ -1,0 +1,23 @@
+
+-- load the data
+SET default_parallel 1;
+
+in1 = LOAD 'Taxi_2013/taxifair_hood_tips_mr/part-00000' 
+USING PigStorage(',') 
+AS (id:chararray,pickup_datetime:chararray,month:chararray,day:chararray,hour:chararray,dropoff_datetime:chararray, passenger_count:float, trip_time_in_secs:float, trip_distance:float, fare_amount:float, 
+    surcharge:float,mta_tax:float,tolls_amount:float,tip_amount:float, total_amount:float, tip_percentage:float, pickup_hood:chararray, dropoff_hood:chararray);
+
+-- group by pickup_hood^ dropoff_hood (id)
+in2 = FOREACH (GROUP in1 BY (month,hour))
+      GENERATE
+             group,
+	     SUM(in1.passenger_count) AS passenger_count,
+             SUM(in1.surcharge) AS surcharge,
+	     SUM(in1.mta_tax) AS mta_tax,
+	     SUM(in1.tolls_amount) AS tolls_amount,	
+	     SUM(in1.fare_amount) AS fare_amount,
+             SUM(in1.tip_amount) AS tip_amount,
+             SUM(in1.total_amount) AS total_amount;
+
+-- store the data
+STORE in2 INTO 'group-only-hood-tip/out-1-month-group-with-counter-month-hour' USING PigStorage (',');
