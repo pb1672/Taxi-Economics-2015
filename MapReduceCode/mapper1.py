@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 ###############################################################################
 ##
-## Big Data - Final Project
-## mapper1.py
-## Join fares and trips and search the zipcodes using rtree
-## contact: drp354@nyu.edu
 ##
 ###############################################################################
 
